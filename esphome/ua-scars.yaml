@@ -1,0 +1,110 @@
+esphome:
+  name: ua-scars
+  friendly_name: "UA Scars"
+  platformio_options:
+    board_build.flash_mode: dio
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: esp-idf
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  password: ""
+
+ota:
+  - platform: esphome
+    password: ""
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Ua-Scars"
+    password: "12345678"
+captive_portal:
+
+web_server:
+  port: 80
+    
+external_components:
+  - source:
+      type: local
+      path: ./
+    components: [ua_scars]
+
+ua_scars:
+  id: tryzub
+
+light:
+  - platform: esp32_rmt_led_strip
+    id: ua_scars_light
+    rgb_order: GRB
+    pin: GPIO8
+    num_leds: 300
+    chipset: ws2812
+    name: "Tryzub"
+    restore_mode: RESTORE_DEFAULT_ON
+    effects:
+      - ua_flag:
+      - liberty-flash:
+      - liberty-handwriting:
+      - scars-ua:
+      - scars-fade:      
+      - twinkle-ua:
+      - waterdrops:
+      - addressable_rainbow:
+          speed: 10
+          width: 300
+      - addressable_fireworks:
+          update_interval: 32ms
+          spark_probability: 75%
+          #use_random_color: false
+          fade_out_rate: 120
+      - addressable_random_twinkle:
+
+globals:
+  - id: active_effect
+    type: int
+    restore_value: yes
+    initial_value: '0' 
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO10
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    name: "Effects Button"
+    id: effects_button
+    on_press:
+      then:
+        # - light.control:
+        #     id: ua_scars_light
+        #     effect: "Flag UA"
+        - lambda: !lambda |-
+                    id(active_effect) += 1;
+                    auto call = id(ua_scars_light).turn_on();
+                    switch (id(active_effect)) {
+                      case 1: call.set_effect("Flag UA"); break;
+                      case 2: call.set_effect("Liberty FLash"); break;
+                      case 3: call.set_effect("Liberty Writing"); break;
+                      case 4: call.set_effect("Scars UA"); break;
+                      case 5: call.set_effect("Scars Fading"); break;
+                      case 6: call.set_effect("Twinkle UA"); break;
+                      case 7: call.set_effect("Waterdrops"); break;
+                      default:
+                        id(active_effect) = 0;
+                        call.set_effect("None");
+                        break;
+                    }
+                    call.perform();
+
