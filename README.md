@@ -12,8 +12,7 @@ I wanted to light up and animate one piece of an art. The design is based on the
 And the animations in action:
 
 <p align="center">
-<img src="docs/results/video/
-PXL_20250322_021350717_FHD.webp" alt="Animation of the trident scars glowing in red" width="46%">
+<img src="docs/results/video/PXL_20250322_021350717_FHD.webp" alt="Animation of the trident scars glowing in red" width="46%">
 <img src="docs/results/video/PXL_20261104_194422570_FHD.webp" alt="Animation of the trident scars glowing in red" width="46%">
 </p>
 
