@@ -1,1 +1,0 @@
-#UA Scars art project
